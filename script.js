@@ -126,19 +126,35 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', function(e) { e.preventDefault(); const t = document.querySelector(this.getAttribute('href')); if (t) window.scrollTo({ top: t.getBoundingClientRect().top + window.pageYOffset - 80, behavior: 'smooth' }); });
 });
 
-// ===== CONTACT FORM =====
-const cForm = document.getElementById('contactForm');
-if (cForm) {
-    cForm.addEventListener('submit', function(e) {
-        e.preventDefault(); const btn = this.querySelector('button[type="submit"]'), orig = btn.innerHTML;
-        btn.innerHTML = '<span>Sending...</span>'; btn.disabled = true;
+// ===== COPY EMAIL BUTTON =====
+(function() {
+    const btn = document.getElementById('copyEmailBtn');
+    const label = document.getElementById('copyEmailLabel');
+    if (!btn) return;
+    const email = 'nancyrosev@outlook.com';
+    btn.addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(email);
+        } catch (err) {
+            // Fallback for older browsers
+            const ta = document.createElement('textarea');
+            ta.value = email;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+        }
+        const orig = label.textContent;
+        label.textContent = 'Copied!';
+        btn.style.borderColor = '#43e97b';
+        btn.style.color = '#43e97b';
         setTimeout(() => {
-            btn.innerHTML = '<span>Message Sent!</span>';
-            btn.style.background = '#43e97b';
-            setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; btn.style.background = ''; cForm.reset(); }, 2500);
-        }, 1500);
+            label.textContent = orig;
+            btn.style.borderColor = '';
+            btn.style.color = '';
+        }, 2000);
     });
-}
+})();
 
 // ===== TEXT SCRAMBLE =====
 class TextScramble {
